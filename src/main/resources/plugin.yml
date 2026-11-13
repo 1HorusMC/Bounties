@@ -1,0 +1,33 @@
+name: HorusBounties
+version: '${version}'
+main: com.horus.bounties.HorusBountiesPlugin
+api-version: '1.21'
+authors: [Horus]
+description: Sistema de recompensas (bounties) con Vault, PlaceholderAPI, GUI paginada y SQLite/MariaDB.
+depend: [Vault]
+softdepend: [PlaceholderAPI]
+
+commands:
+  bounty:
+    description: Coloca una recompensa sobre un jugador.
+    usage: /bounty <jugador> <cantidad>
+    permission: horusbounties.use
+  bounties:
+    description: Abre el menú con las recompensas activas.
+    usage: /bounties
+    permission: horusbounties.gui
+  bountyadmin:
+    description: Comandos administrativos de HorusBounties.
+    usage: /bountyadmin clear <jugador>
+    permission: horusbounties.admin
+
+permissions:
+  horusbounties.use:
+    description: Permite colocar recompensas usando /bounty.
+    default: true
+  horusbounties.gui:
+    description: Permite abrir el menú de recompensas con /bounties.
+    default: true
+  horusbounties.admin:
+    description: Permite usar comandos administrativos como /bountyadmin clear.
+    default: op

@@ -1,0 +1,58 @@
+database:
+  # Tipos soportados: SQLITE, MARIADB
+  type: "SQLITE"
+  sqlite:
+    file: "bounties.db"
+  mariadb:
+    host: "localhost"
+    port: 3306
+    database: "horusbounties"
+    username: "root"
+    password: ""
+    pool-size: 10
+
+bounty:
+  min-amount: 100.0
+  max-amount: 1000000.0
+  allow-self-bounty: false
+
+killstreak:
+  enabled: true
+  kills-required: 5
+  repeat-every-streak: true
+  reward-amount: 500.0
+
+anti-boost:
+  enabled: true
+  block-same-ip: true
+  uuid-cooldown-seconds: 1800
+  ip-cooldown-seconds: 3600
+
+gui:
+  title: "<gradient:#ffaa00:#ff5555><bold>Recompensas</bold></gradient> <dark_gray>(<gray>Página <page>/<max_page></gray>)"
+  head-name: "<gold><bold><player></bold></gold>"
+  head-lore:
+    - "<gray>Recompensa actual: <green>$<amount></green>"
+    - "<dark_gray>¡Elimina a este jugador para reclamarla!"
+  previous-page-name: "<yellow>« Página Anterior</yellow>"
+  next-page-name: "<yellow>Página Siguiente »</yellow>"
+  close-name: "<red>Cerrar</red>"
+
+messages:
+  prefix: "<gradient:#ffaa00:#ff5555><bold>HorusBounties</bold></gradient> <dark_gray>»</dark_gray> "
+  bounty-placed: "<prefix><yellow><sender></yellow> <gray>ha puesto una recompensa de</gray> <green>$<amount></green> <gray>sobre</gray> <gold><target></gold><gray>. (Total: <green>$<total></green>)</gray>"
+  bounty-claimed: "<prefix><yellow><killer></yellow> <gray>eliminó a</gray> <red><victim></red> <gray>y reclamó una recompensa de</gray> <green>$<amount></green><gray>!</gray>"
+  bounty-killstreak: "<prefix><red><player></red> <gray>alcanzó una racha de</gray> <gold><streak> bajas</gold> <gray>y recibió una recompensa automática de</gray> <green>$<amount></green><gray>! (Total: <green>$<total></green>)</gray>"
+  bounty-cleared: "<prefix><gray>Se eliminó la recompensa de</gray> <gold><target></gold><gray>.</gray>"
+  anti-boost-blocked: "<prefix><red>Baja ignorada por protección anti-boost (misma IP o cooldown entre jugadores).</red>"
+  no-permission: "<prefix><red>No tienes permiso para ejecutar este comando.</red>"
+  player-only: "<prefix><red>Este comando solo puede ejecutarse como jugador.</red>"
+  player-not-found: "<prefix><red>No se encontró al jugador <yellow><target></yellow>.</red>"
+  invalid-amount: "<prefix><red>Cantidad inválida. Introduce un número válido.</red>"
+  amount-too-low: "<prefix><red>La cantidad mínima es <yellow>$<min></yellow>.</red>"
+  amount-too-high: "<prefix><red>La cantidad máxima es <yellow>$<max></yellow>.</red>"
+  not-enough-money: "<prefix><red>No tienes suficiente dinero (<yellow>$<amount></yellow>).</red>"
+  self-bounty: "<prefix><red>No puedes poner una recompensa sobre ti mismo.</red>"
+  no-bounty: "<prefix><yellow><target></yellow> <red>no tiene ninguna recompensa activa.</red>"
+  usage-bounty: "<prefix><gray>Uso correcto: <yellow>/bounty <jugador> <cantidad></yellow></gray>"
+  usage-bountyadmin: "<prefix><gray>Uso correcto: <yellow>/bountyadmin clear <jugador></yellow></gray>"
