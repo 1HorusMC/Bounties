@@ -48,7 +48,17 @@ class BountyManager(private val databaseManager: DatabaseManager) {
             BountyEntry(targetUuid, targetName, newAmount, now)
         }!!
 
-        return databaseManager.upsertBounty(updated).thenApply { updated }
+        return databaseManager.upsertBounty(updated).handle { _, ex ->
+            if (ex != null) {
+                // Roll back the in-memory change so cache and refund stay consistent
+                cache.compute(targetUuid) { _, current ->
+                    val remaining = (current?.amount ?: 0.0) - amountToAdd
+                    if (remaining <= 0.0001) null else current!!.copy(amount = remaining)
+                }
+                throw java.util.concurrent.CompletionException(ex)
+            }
+            updated
+        }
     }
 
     fun claimBounty(targetUuid: UUID): BountyEntry? {

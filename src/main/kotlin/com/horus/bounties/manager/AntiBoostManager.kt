@@ -81,5 +81,15 @@ class AntiBoostManager(private var settings: AntiBoostSettings) {
         if (settings.ipCooldownSeconds > 0 && !killerIp.isNullOrBlank() && !victimIp.isNullOrBlank()) {
             ipPairKills["$killerIp:$victimIp"] = nowMillis
         }
+
+        prune(nowMillis)
+    }
+
+    /** Drops expired entries so the maps cannot grow without bound (memory exhaustion). */
+    private fun prune(nowMillis: Long) {
+        val uuidTtl = settings.uuidCooldownSeconds * 1000L
+        val ipTtl = settings.ipCooldownSeconds * 1000L
+        uuidPairKills.entries.removeIf { nowMillis - it.value >= uuidTtl }
+        ipPairKills.entries.removeIf { nowMillis - it.value >= ipTtl }
     }
 }
