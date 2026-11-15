@@ -15,6 +15,11 @@ import org.bukkit.event.entity.PlayerDeathEvent
  */
 class CombatListener(private val plugin: HorusBountiesPlugin) : Listener {
 
+    @EventHandler
+    fun onQuit(event: org.bukkit.event.player.PlayerQuitEvent) {
+        plugin.killstreakManager.resetStreak(event.player.uniqueId)
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onPlayerDeath(event: PlayerDeathEvent) {
         val victim = event.entity
@@ -50,7 +55,12 @@ class CombatListener(private val plugin: HorusBountiesPlugin) : Listener {
 
         val claimed = plugin.bountyManager.claimBounty(victim.uniqueId)
         if (claimed != null && claimed.amount > 0.0) {
-            plugin.vaultHook.deposit(killer, claimed.amount)
+            if (!plugin.vaultHook.deposit(killer, claimed.amount)) {
+                // Payout failed: restore the bounty instead of destroying the funds
+                plugin.logger.severe("Vault deposit failed for ${killer.name}; restoring bounty on ${victim.name}.")
+                plugin.bountyManager.addBounty(victim.uniqueId, victim.name, claimed.amount)
+                return
+            }
             MessageUtil.broadcast(
                 config,
                 "bounty-claimed",

@@ -4,62 +4,61 @@ Plugin de recompensas (*bounties*) de alto rendimiento y moderno para servidores
 
 ---
 
-## 🌐 Compatibilidad de Versiones
+## 🌐 Compatibilidad de versiones
 
-- **Versiones de Minecraft soportadas**: **1.20.5 hasta 26.3** *(desde la primera versión de Minecraft que requirió Java 21 en adelante)*.
-- **Entornos / Forks compatibles**: Paper, Leaf, Purpur y derivados modernos basados en Paper API.
-- **Entorno de ejecución de Java**: **Java 21 (LTS)** o superior.
-
----
-
-## 📦 Requisitos y Dependencias
-
-Aquí se detalla si el plugin requiere otras dependencias instaladas en el servidor o si son opcionales:
-
-| Dependencia | Tipo | ¿Es Obligatoria? | Descripción |
-| :--- | :---: | :---: | :--- |
-| **Java 21+** | Entorno | **OBLIGATORIO** | Requiere Java 21 o posterior para la ejecución (usa *Virtual Threads*). |
-| **[Vault](https://www.spigotmc.org/resources/vault.34315/)** | Plugin | **OBLIGATORIO** | Necesario para gestionar las transacciones económicas de recompensas. |
-| **Plugin de Economía** | Plugin | **OBLIGATORIO** | Un proveedor de economía compatible con Vault (ej. *EssentialsX*, *EconomyManager*, *Treasury*, etc.). Sin esto, Vault no puede procesar dinero. |
-| **[PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/)** | Plugin | **OPCIONAL** | Solo si deseas utilizar los placeholders `%horusbounties_*%` en scoreboards, chat, tablist u hologramas. Si no está instalado, el plugin funciona con normalidad. |
-| **MariaDB / MySQL** | Servicio externo | **OPCIONAL** | Solo si cambias `database.type` a `MARIADB`. Por defecto usa **SQLite**, que viene integrado y **no requiere ningún servicio ni base de datos externa**. |
+- **Versiones de Minecraft soportadas:** 1.20.5 hasta 26.3.
+- **Entornos / Forks compatibles:** Paper, Purpur, Leaf y derivados modernos basados en Paper API.
+- **Entorno de ejecución de Java:** Java 21 (LTS) o superior.
 
 ---
 
-## ⚡ Características Principales
+## 📦 Requisitos y dependencias
 
-- 💰 **Integración con Vault**: Cobro automático al colocar recompensas y acreditación al asesino al eliminarlas.
-- 🗄️ **Almacenamiento Asíncrono Híbrido**: Soporte para **SQLite** (por defecto) y **MariaDB / MySQL** mediante un pool de conexiones optimizado con **HikariCP** y ejecución asíncrona sobre *Virtual Threads* de Java 21.
-- 📖 **Menú GUI Paginado (`/bounties`)**: Interfaz visual interactiva con cabezas personalizadas (`PLAYER_HEAD`) de los jugadores ordenadas automáticamente de mayor a menor recompensa.
-- 🔥 **Recompensas Automáticas por Killstreak**: Si un jugador alcanza una racha de bajas configurable (ej. 5 bajas), el plugin le asigna automáticamente una recompensa sobre su cabeza.
-- 🛡️ **Protección Anti-Boost Avanzada**:
-  - Detección y bloqueo por misma dirección IP (evita multicuentas/autocobros).
-  - Cooldowns configurables entre parejas de UUID (`asesino <-> víctima`) y parejas de IP.
+| Dependencia | Tipo | ¿Obligatoria? | Descripción |
+|:---|:---:|:---:|:---|
+| **Java 21+** | Entorno | **Sí** | Requerido para ejecutar el plugin. Utiliza Virtual Threads. |
+| [**Vault**](https://www.spigotmc.org/resources/vault.34315/) | Plugin | **Sí** | Necesario para gestionar las transacciones económicas de las recompensas. |
+| **Plugin de economía** | Plugin | **Sí** | Proveedor compatible con Vault, como EssentialsX o EconomyManager. |
+| [**PlaceholderAPI**](https://www.spigotmc.org/resources/placeholderapi.6245/) | Plugin | No | Necesario únicamente para utilizar los placeholders del plugin. |
+| **MariaDB / MySQL** | Servicio externo | No | Solo necesario si se configura `database.type` como `MARIADB`. Por defecto utiliza SQLite, sin necesidad de servicios externos. |
+
+---
+
+## ⚡ Características principales
+
+- 💰 **Integración con Vault:** cobro automático al colocar recompensas y acreditación del dinero al asesino cuando elimina al objetivo.
+- 🗄️ **Almacenamiento asíncrono híbrido:** soporte para **SQLite** (predeterminado) y **MariaDB / MySQL**, mediante un pool de conexiones optimizado con **HikariCP** y ejecución asíncrona sobre Virtual Threads de Java 21.
+- 📖 **Menú GUI paginado (`/bounties`):** interfaz visual interactiva con cabezas personalizadas (`PLAYER_HEAD`) de los jugadores, ordenadas automáticamente de mayor a menor recompensa.
+- 🔥 **Recompensas automáticas por Killstreak:** asignación automática de recompensas cuando un jugador alcanza una racha de bajas configurable.
+- 🛡️ **Protección Anti-Boost avanzada:**
+  - Detección y bloqueo de jugadores que comparten dirección IP.
+  - Cooldowns configurables entre parejas de UUID (asesino ↔ víctima).
+  - Cooldowns configurables entre parejas de IP.
   - Limpieza automática en memoria de registros expirados.
-- 🎨 **Soporte Completo de MiniMessage**: Textos con degradados (*gradients*), colores hexadecimales y tags modernos de Adventure en todos los mensajes y la GUI.
-- 🧩 **Expansión PlaceholderAPI**: Placeholders dinámicos para tablas de clasificación, marcadores y hologramas.
+- 🎨 **Soporte completo de MiniMessage:** degradados (*gradients*), colores hexadecimales y etiquetas modernas de Adventure en mensajes y GUI.
+- 🧩 **Expansión PlaceholderAPI:** placeholders dinámicos para tablas de clasificación, marcadores y hologramas.
 
 ---
 
-## 🛠️ Comandos y Permisos
+## 🛠️ Comandos y permisos
 
-| Comando | Descripción | Permiso por Defecto |
-| :--- | :--- | :--- |
-| `/bounty <jugador> <cantidad>` | Coloca o incrementa la recompensa sobre un jugador descontando el dinero de tu saldo en Vault. | `horusbounties.use` (Todos) |
+| Comando | Descripción | Permiso por defecto |
+|:---|:---|:---|
+| `/bounty <jugador> <cantidad>` | Coloca o incrementa una recompensa sobre un jugador, descontando el dinero del saldo del ejecutor mediante Vault. | `horusbounties.use` (Todos) |
 | `/bounties` | Abre el menú GUI interactivo y paginado con todas las recompensas activas. | `horusbounties.gui` (Todos) |
-| `/bountyadmin clear <jugador>` | Elimina por completo la recompensa de un jugador de la base de datos y memoria. | `horusbounties.admin` (OP) |
+| `/bountyadmin clear <jugador>` | Elimina por completo la recompensa de un jugador de la base de datos y de la memoria. | `horusbounties.admin` (OP) |
 
 ---
 
 ## 🧩 Placeholders (PlaceholderAPI)
 
-| Placeholder | Descripción | Ejemplo de Salida |
-| :--- | :--- | :--- |
+| Placeholder | Descripción | Ejemplo de salida |
+|:---|:---|:---|
 | `%horusbounties_amount%` | Recompensa activa sobre el jugador actual. | `500.0` o `0` |
-| `%horusbounties_top_1_name%` | Nombre del jugador en el puesto #1 del top de recompensas. | `Steve` |
-| `%horusbounties_top_1_amount%` | Monto del puesto #1 del top de recompensas. | `15,000.0` |
-| `%horusbounties_top_<N>_name%` | Nombre del jugador en el puesto N del top (ej. `top_2_name`, `top_3_name`). | `Alex` |
-| `%horusbounties_top_<N>_amount%`| Monto del jugador en el puesto N del top. | `7,500.0` |
+| `%horusbounties_top_1_name%` | Nombre del jugador en el primer puesto del ranking. | `Steve` |
+| `%horusbounties_top_1_amount%` | Importe de la recompensa del primer puesto. | `15,000.0` |
+| `%horusbounties_top_<N>_name%` | Nombre del jugador en el puesto N. | `Alex` |
+| `%horusbounties_top_<N>_amount%` | Importe de la recompensa del puesto N. | `7,500.0` |
 
 ---
 
@@ -69,8 +68,10 @@ Aquí se detalla si el plugin requiere otras dependencias instaladas en el servi
 database:
   # Tipos soportados: SQLITE, MARIADB
   type: "SQLITE"
+
   sqlite:
     file: "bounties.db"
+
   mariadb:
     host: "localhost"
     port: 3306
@@ -113,14 +114,14 @@ messages:
   bounty-killstreak: "<prefix><red><player></red> <gray>alcanzó una racha de</gray> <gold><streak> bajas</gold> <gray>y recibió una recompensa automática de</gray> <green>$<amount></green><gray>! (Total: <green>$<total></green>)</gray>"
   bounty-cleared: "<prefix><gray>Se eliminó la recompensa de</gray> <gold><target></gold><gray>.</gray>"
   anti-boost-blocked: "<prefix><red>Baja ignorada por protección anti-boost (misma IP o cooldown entre jugadores).</red>"
-  # ... más mensajes configurables
+  # ... Más mensajes configurables
 ```
 
 ---
 
-## 🔨 Compilación desde el Código Fuente
+## 🔨 Compilación desde el código fuente
 
-Clona el repositorio y compila con Gradle Wrapper usando JDK 21:
+Clona el repositorio y compila utilizando Gradle Wrapper con JDK 21:
 
 ```bash
 git clone https://github.com/1Shad0w/HorusBounties.git
@@ -129,13 +130,17 @@ cd HorusBounties
 ```
 
 El artefacto compilado se generará en:
-`build/libs/HorusBounties-1.0.0.jar`
+
+```text
+build/libs/HorusBounties-1.0.0.jar
+```
 
 ---
 
-## 📜 Reglas de Contribución
+## 📜 Reglas de contribución
 
-Consulta [AGENTS.md](AGENTS.md) para conocer las pautas de desarrollo:
-- Prohibido hacer push directo a `main`.
-- Ramas separadas (`feat/...`, `fix/...`, `docs/...`).
-- Verificación obligatoria con `./gradlew build` antes de crear un Pull Request.
+Consulta [`AGENTS.md`](AGENTS.md) para conocer las pautas de desarrollo.
+
+- Está prohibido hacer push directamente a `main`.
+- Utiliza ramas independientes según el tipo de cambio (`feat/...`, `fix/...`, `docs/...`).
+- La ejecución de `./gradlew build` es obligatoria antes de crear un Pull Request.

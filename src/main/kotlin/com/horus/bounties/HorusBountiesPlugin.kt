@@ -78,7 +78,9 @@ class HorusBountiesPlugin : JavaPlugin() {
 
     private fun buildDatabaseConfig(): DatabaseConfig {
         val dbType = DatabaseType.fromConfig(config.getString("database.type", "SQLITE"))
-        val sqliteFileName = config.getString("database.sqlite.file", "bounties.db") ?: "bounties.db"
+        val rawName = config.getString("database.sqlite.file", "bounties.db") ?: "bounties.db"
+        // Confine the SQLite file to the plugin folder (prevents path traversal via config)
+        val sqliteFileName = File(rawName).name.ifBlank { "bounties.db" }
         return DatabaseConfig(
             type = dbType,
             sqliteFile = File(dataFolder, sqliteFileName),
