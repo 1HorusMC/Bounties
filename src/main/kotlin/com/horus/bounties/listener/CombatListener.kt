@@ -79,8 +79,14 @@ class CombatListener(private val plugin: HorusBountiesPlugin) : Listener {
         val repeatEveryStreak = config.getBoolean("killstreak.repeat-every-streak", true)
         val rewardAmount = config.getDouble("killstreak.reward-amount", 500.0)
 
-        if (rewardAmount > 0.0 && plugin.killstreakManager.shouldTriggerAutoBounty(streak, killsRequired, repeatEveryStreak)) {
-            plugin.bountyManager.addBounty(killer.uniqueId, killer.name, rewardAmount)
+        // Automatic bounties are not backed by any player's money, so cap them to limit
+        // multi-account farming (alts feeding kills to mint free payouts).
+        val maxTotal = config.getDouble("killstreak.max-total-bounty", 5000.0)
+        val currentTotal = plugin.bountyManager.getBountyAmount(killer.uniqueId)
+        val grant = if (maxTotal > 0.0) minOf(rewardAmount, maxTotal - currentTotal) else rewardAmount
+
+        if (grant > 0.0 && plugin.killstreakManager.shouldTriggerAutoBounty(streak, killsRequired, repeatEveryStreak)) {
+            plugin.bountyManager.addBounty(killer.uniqueId, killer.name, grant)
                 .thenAccept { updated ->
                     Bukkit.getScheduler().runTask(plugin, Runnable {
                         MessageUtil.broadcast(
@@ -88,7 +94,7 @@ class CombatListener(private val plugin: HorusBountiesPlugin) : Listener {
                             "bounty-killstreak",
                             Placeholder.unparsed("player", killer.name),
                             Placeholder.unparsed("streak", streak.toString()),
-                            Placeholder.unparsed("amount", plugin.bountyManager.formatAmount(rewardAmount)),
+                            Placeholder.unparsed("amount", plugin.bountyManager.formatAmount(grant)),
                             Placeholder.unparsed("total", plugin.bountyManager.formatAmount(updated.amount))
                         )
                     })

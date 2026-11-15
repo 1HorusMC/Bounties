@@ -39,7 +39,11 @@ data class DatabaseConfig(
  */
 class DatabaseManager(private val config: DatabaseConfig) {
 
-    private val executor: ExecutorService = Executors.newVirtualThreadPerTaskExecutor()
+    // Single ordered writer: guarantees writes for the same bounty are applied in submission
+    // order (concurrent threads could persist a stale amount or resurrect a claimed bounty).
+    private val executor: ExecutorService = Executors.newSingleThreadExecutor { runnable ->
+        Thread(runnable, "HorusBounties-DB").apply { isDaemon = true }
+    }
     private val dataSource: HikariDataSource
 
     init {
@@ -166,7 +170,11 @@ class DatabaseManager(private val config: DatabaseConfig) {
     }
 
     fun close() {
+        // Drain pending writes before closing the pool, otherwise queued deletes/upserts are lost
         executor.shutdown()
+        if (!executor.awaitTermination(15, java.util.concurrent.TimeUnit.SECONDS)) {
+            executor.shutdownNow()
+        }
         if (!dataSource.isClosed) {
             dataSource.close()
         }

@@ -48,20 +48,21 @@ class HorusBountiesPlugin : JavaPlugin() {
         }
 
         val dbConfig = buildDatabaseConfig()
-        databaseManager = DatabaseManager(dbConfig)
-        bountyManager = BountyManager(databaseManager)
+        try {
+            databaseManager = DatabaseManager(dbConfig)
+            bountyManager = BountyManager(databaseManager)
+            // Load synchronously: commands/listeners must never run against a half-loaded cache
+            bountyManager.loadFromDatabase().get(30, java.util.concurrent.TimeUnit.SECONDS)
+        } catch (ex: Exception) {
+            logger.severe("Failed to initialize database or load bounties: ${ex.message}. Disabling HorusBounties.")
+            server.pluginManager.disablePlugin(this)
+            return
+        }
+        logger.info("Loaded ${bountyManager.getTopBounties().size} active bounties from ${dbConfig.type}.")
+
         killstreakManager = KillstreakManager()
         antiBoostManager = AntiBoostManager(buildAntiBoostSettings())
         bountiesGui = BountiesGui(this)
-
-        bountyManager.loadFromDatabase()
-            .thenRun {
-                logger.info("Loaded ${bountyManager.getTopBounties().size} active bounties from ${dbConfig.type}.")
-            }
-            .exceptionally { ex ->
-                logger.severe("Failed to initialize database or load bounties: ${ex.message}")
-                null
-            }
 
         registerCommands()
         registerListeners()
