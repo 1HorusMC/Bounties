@@ -18,9 +18,11 @@ class BountiesPlaceholderExpansion(
 
     override fun getIdentifier(): String = "horusbounties"
 
-    override fun getAuthor(): String = plugin.pluginMeta.authors.joinToString(", ").ifBlank { "Horus" }
+    override fun getAuthor(): String = runCatching { plugin.pluginMeta.authors.joinToString(", ") }
+        .getOrNull()?.ifBlank { "Horus" } ?: plugin.description.authors.joinToString(", ").ifBlank { "Horus" }
 
-    override fun getVersion(): String = plugin.pluginMeta.version
+    override fun getVersion(): String = runCatching { plugin.pluginMeta.version }
+        .getOrNull() ?: plugin.description.version ?: "1.0.0"
 
     override fun persist(): Boolean = true
 

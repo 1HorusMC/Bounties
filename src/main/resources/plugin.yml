@@ -1,7 +1,7 @@
 name: HorusBounties
 version: '${version}'
 main: com.horus.bounties.HorusBountiesPlugin
-api-version: '1.21'
+api-version: '1.20'
 authors: [Horus]
 description: Sistema de recompensas (bounties) con Vault, PlaceholderAPI, GUI paginada y SQLite/MariaDB.
 depend: [Vault]
