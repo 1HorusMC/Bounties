@@ -21,6 +21,8 @@ killstreak:
   kills-required: 5
   repeat-every-streak: true
   reward-amount: 500.0
+  # Tope del total de recompensa acumulable por rachas automáticas (0 = sin límite).
+  max-total-bounty: 5000.0
 
 anti-boost:
   enabled: true

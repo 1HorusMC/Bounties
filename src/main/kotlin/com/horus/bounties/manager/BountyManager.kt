@@ -63,7 +63,14 @@ class BountyManager(private val databaseManager: DatabaseManager) {
 
     fun claimBounty(targetUuid: UUID): BountyEntry? {
         val removed = cache.remove(targetUuid) ?: return null
-        databaseManager.deleteBounty(targetUuid)
+        // If the delete fails the bounty would reappear after a restart and be paid twice
+        databaseManager.deleteBounty(targetUuid).exceptionallyCompose {
+            databaseManager.deleteBounty(targetUuid)
+        }.exceptionally { ex ->
+            java.util.logging.Logger.getLogger("HorusBounties")
+                .severe("Could not delete claimed bounty $targetUuid from database: ${ex.message}")
+            false
+        }
         return removed
     }
 

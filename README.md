@@ -16,7 +16,7 @@ Plugin de recompensas (*bounties*) de alto rendimiento y moderno para servidores
 
 | Dependencia | Tipo | ¿Obligatoria? | Descripción |
 |:---|:---:|:---:|:---|
-| **Java 21+** | Entorno | **Sí** | Requerido para ejecutar el plugin. Utiliza Virtual Threads. |
+| **Java 21+** | Entorno | **Sí** | Requerido para ejecutar el plugin. |
 | [**Vault**](https://www.spigotmc.org/resources/vault.34315/) | Plugin | **Sí** | Necesario para gestionar las transacciones económicas de las recompensas. |
 | **Plugin de economía** | Plugin | **Sí** | Proveedor compatible con Vault, como EssentialsX o EconomyManager. |
 | [**PlaceholderAPI**](https://www.spigotmc.org/resources/placeholderapi.6245/) | Plugin | No | Necesario únicamente para utilizar los placeholders del plugin. |
@@ -27,7 +27,7 @@ Plugin de recompensas (*bounties*) de alto rendimiento y moderno para servidores
 ## ⚡ Características principales
 
 - 💰 **Integración con Vault:** cobro automático al colocar recompensas y acreditación del dinero al asesino cuando elimina al objetivo.
-- 🗄️ **Almacenamiento asíncrono híbrido:** soporte para **SQLite** (predeterminado) y **MariaDB / MySQL**, mediante un pool de conexiones optimizado con **HikariCP** y ejecución asíncrona sobre Virtual Threads de Java 21.
+- 🗄️ **Almacenamiento asíncrono híbrido:** soporte para **SQLite** (predeterminado) y **MariaDB / MySQL**, mediante un pool de conexiones optimizado con **HikariCP** y cola de escritura asíncrona ordenada (nunca bloquea el hilo principal).
 - 📖 **Menú GUI paginado (`/bounties`):** interfaz visual interactiva con cabezas personalizadas (`PLAYER_HEAD`) de los jugadores, ordenadas automáticamente de mayor a menor recompensa.
 - 🔥 **Recompensas automáticas por Killstreak:** asignación automática de recompensas cuando un jugador alcanza una racha de bajas configurable.
 - 🛡️ **Protección Anti-Boost avanzada:**
@@ -90,6 +90,7 @@ killstreak:
   kills-required: 5
   repeat-every-streak: true
   reward-amount: 500.0
+  max-total-bounty: 5000.0   # tope de recompensa acumulable por rachas (0 = sin límite)
 
 anti-boost:
   enabled: true
