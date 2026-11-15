@@ -52,7 +52,10 @@ class BountyCommand(private val plugin: HorusBountiesPlugin) : CommandExecutor, 
             return true
         }
 
-        val amount = args[1].toDoubleOrNull()
+        // Reject NaN/Infinity/scientific-notation abuse and round to 2 decimals
+        val rawAmount = args[1].takeIf { it.length <= 15 && it.matches(Regex("^\\d+(\\.\\d{1,2})?$")) }
+            ?.toDoubleOrNull()
+        val amount = rawAmount?.let { Math.round(it * 100.0) / 100.0 }
         if (amount == null || !amount.isFinite() || amount <= 0.0) {
             MessageUtil.send(sender, config, "invalid-amount")
             return true
@@ -116,6 +119,10 @@ class BountyCommand(private val plugin: HorusBountiesPlugin) : CommandExecutor, 
             }
             .exceptionally { ex ->
                 plugin.logger.severe("Failed to persist bounty for $targetName: ${ex.message}")
+                // Refund the sender so money is never lost on persistence failure
+                Bukkit.getScheduler().runTask(plugin, Runnable {
+                    plugin.vaultHook.deposit(sender, amount)
+                })
                 null
             }
 

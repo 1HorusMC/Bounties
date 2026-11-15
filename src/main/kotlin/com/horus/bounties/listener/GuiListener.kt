@@ -7,11 +7,20 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryDragEvent
 
 /**
  * Handles navigation clicks inside the paginated bounties GUI.
  */
 class GuiListener(private val bountiesGui: BountiesGui) : Listener {
+
+    // Prevents dragging items into/out of the GUI (item insertion/duplication exploits).
+    @EventHandler
+    fun onInventoryDrag(event: InventoryDragEvent) {
+        if (event.inventory.holder is BountiesInventoryHolder) {
+            event.isCancelled = true
+        }
+    }
 
     @EventHandler
     fun onInventoryClick(event: InventoryClickEvent) {
